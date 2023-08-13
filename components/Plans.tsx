@@ -7,7 +7,6 @@ import useAuth from '../hooks/useAuth'
 import { loadCheckout } from '../lib/stripe'
 import Loader from './Loader'
 import Table from './Table'
-import Image from 'next/image'
 
 interface Props {
   products: Product[]
