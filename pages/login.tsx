@@ -95,7 +95,7 @@ function Login() {
             className="text-white hover:underline"
             onClick={() => setLogin(false)}
           >
-            Sign up now
+            Sign up now.
           </button>
         </div>
       </form>
