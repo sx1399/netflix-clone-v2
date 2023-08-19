@@ -37,6 +37,7 @@ const Home = ({
   trendingNow,
   products,
 }: Props) => {
+  console.log('Products received in Home component:', products)
   const { loading, user } = useAuth()
   const showModal = useRecoilValue(modalState)
   const subscription = useSubscription(user)
@@ -81,12 +82,16 @@ const Home = ({
 export default Home
 
 export async function generateStaticParams() {
+  console.log('Fetching products...')
+
   const products = await getProducts(payments, {
     includePrices: true,
     activeOnly: true,
   })
     .then((res) => res)
     .catch((error) => console.log(error.message))
+
+    console.log('Fetched products:', products)
 
   const [
     netflixOriginals,
