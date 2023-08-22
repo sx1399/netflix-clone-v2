@@ -14,13 +14,11 @@ interface Props {
 
 function Plans({ products = [] }: Props) {
   const { logout, user } = useAuth()
-  const [selectedPlan, setSelectedPlan] = useState<Product | null>(
-    products.length > 0 ? products[0] : null
-  );  
+  const [selectedPlan, setSelectedPlan] = useState<Product | null>(products[2]);  
   const [isBillingLoading, setBillingLoading] = useState(false)
 
   console.log(products)
-  
+
   const subscribeToPlan = () => {
     if (!user) return
 
