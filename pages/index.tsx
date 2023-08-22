@@ -37,7 +37,6 @@ const Home = ({
   trendingNow,
   products,
 }: Props) => {
-  console.log('Products received in Home component:', products)
   const { loading, user } = useAuth()
   const showModal = useRecoilValue(modalState)
   const subscription = useSubscription(user)
