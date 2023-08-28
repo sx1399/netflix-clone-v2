@@ -80,49 +80,79 @@ const Home = ({
 
 export default Home
 
-export async function generateStaticParams() {
-  console.log('Fetching products...')
+export const getServerSideProps = async () => {
+  console.log('Fetching products...');
 
-  const products = await getProducts(payments, {
-    includePrices: true,
-    activeOnly: true,
-  })
-    .then((res) => res)
-    .catch((error) => console.log(error.message))
+  try {
+    const products = await getProducts(payments, {
+      includePrices: true,
+      activeOnly: true,
+    });
 
-    console.log('Fetched products:', products)
+    console.log('Fetched products:', products);
 
-  const [
-    netflixOriginals,
-    trendingNow,
-    topRated,
-    actionMovies,
-    comedyMovies,
-    horrorMovies,
-    romanceMovies,
-    documentaries,
-  ] = await Promise.all([
-    fetch(requests.fetchNetflixOriginals).then((res) => res.json()),
-    fetch(requests.fetchTrending).then((res) => res.json()),
-    fetch(requests.fetchTopRated).then((res) => res.json()),
-    fetch(requests.fetchActionMovies).then((res) => res.json()),
-    fetch(requests.fetchComedyMovies).then((res) => res.json()),
-    fetch(requests.fetchHorrorMovies).then((res) => res.json()),
-    fetch(requests.fetchRomanceMovies).then((res) => res.json()),
-    fetch(requests.fetchDocumentaries).then((res) => res.json()),
-  ])
+    const movieFetches = [
+      requests.fetchNetflixOriginals,
+      requests.fetchTrending,
+      requests.fetchTopRated,
+      requests.fetchActionMovies,
+      requests.fetchComedyMovies,
+      requests.fetchHorrorMovies,
+      requests.fetchRomanceMovies,
+      requests.fetchDocumentaries,
+    ];
 
-  return {
-    props: {
-      netflixOriginals: netflixOriginals.results,
-      trendingNow: trendingNow.results,
-      topRated: topRated.results,
-      actionMovies: actionMovies.results,
-      comedyMovies: comedyMovies.results,
-      horrorMovies: horrorMovies.results,
-      romanceMovies: romanceMovies.results,
-      documentaries: documentaries.results,
-      products,
-    },
+    const movieResponses = await Promise.all(movieFetches.map((url) => {
+      console.log('Fetching:', url);
+      return fetch(url);
+    }));
+    
+    const movieData = await Promise.all(movieResponses.map(async (response) => {
+      console.log('Response:', response);
+      const data = await response.json();
+      console.log('Parsed Data:', data);
+      return data;
+    }));
+
+    const [
+      netflixOriginals,
+      trendingNow,
+      topRated,
+      actionMovies,
+      comedyMovies,
+      horrorMovies,
+      romanceMovies,
+      documentaries,
+    ] = movieData;
+
+    return {
+      props: {
+        netflixOriginals: netflixOriginals?.results || [],
+        trendingNow: trendingNow?.results || [],
+        topRated: topRated?.results || [],
+        actionMovies: actionMovies?.results || [],
+        comedyMovies: comedyMovies?.results || [],
+        horrorMovies: horrorMovies?.results || [],
+        romanceMovies: romanceMovies?.results || [],
+        documentaries: documentaries?.results || [],
+        products,
+      },
+    };
+  } catch (error) {
+    console.log('Error fetching data:');
+
+    return {
+      props: {
+        netflixOriginals: [],
+        trendingNow: [],
+        topRated: [],
+        actionMovies: [],
+        comedyMovies: [],
+        horrorMovies: [],
+        romanceMovies: [],
+        documentaries: [],
+        products: [],
+      },
+    };
   }
 }
